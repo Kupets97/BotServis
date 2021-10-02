@@ -1,5 +1,5 @@
 import telebot
-import sqlite3, datetime
+import sqlite3
 from telebot import types
 
 
@@ -7,8 +7,11 @@ TOKEN = '1908684588:AAGxUE8Oj0IYycW-j2tfVXD_uTCNMCXhtTg'
 
 bot = telebot.TeleBot(TOKEN)
 chat_id = '534248630'
-#grup_url = 'https://t.me/joinchat/LYpw-68R1iFmZjAy'
-
+connect = sqlite3.connect('users1.db', check_same_thread=False)
+cursor = connect.cursor()
+def db_table_val(user_id: int, user_name: str, user_surname: str, username: str):
+    cursor.execute('INSERT OR IGNORE INTO users1 (user_id, user_name, user_surname, username) VALUES (?, ?, ?, ?)', (user_id, user_name, user_surname, username))
+    connect.commit()
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -24,39 +27,23 @@ def start(message):
 
 @bot.message_handler(content_types=['text'])
 def bot_message(message):
-    if message.chat.type == 'private':
         if message.text == 'Оставьте заявку мастеру🛠.':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            back = types.KeyboardButton('Назад⬅️.')
-            markup.add(back)
+            markup.add(types.KeyboardButton('Назад⬅️.'))
             bot.forward_message(chat_id, message.chat.id,
                                 message.message_id)
             bot.send_message(message.chat.id, 'Вы оставили заявку мастеру(приём заявок осуществляется один раз),'
                                               ' можете ознакомиться со списком наших услуг при нажатии кнопки Назад👇',
                              reply_markup=markup)
 
-            connect = sqlite3.connect('users.db')
-            cursor = connect.cursor()
+            us_id = message.from_user.id
+            us_name = message.from_user.first_name
+            us_sname = message.from_user.last_name
+            username = message.from_user.username
 
-            cursor.execute("""CREATE TABLE IF NOT EXISTS login_id(
-                            name INTEGER
-                            )""")
-
-            connect.commit()
-
-            people_id = message.chat.id
-
-            cursor.execute(f"SELECT name FROM login_id WHERE name = {people_id}")
-            data = cursor.fetchone()
-            if data is None:
-                first_name = [message.chat.first_name]
-                # user_name = [message.from_user.username]
-                cursor.execute("INSERT INTO login_id VALUES(?);", first_name)
-                connect.commit()
-            else:
-                bot.send_message(message.chat.id,
-                                 'Ваша заявка находится в обработке, ждите ответа.')
-            connect.close()
+            db_table_val(user_id=us_id, user_name=us_name,
+                         user_surname=us_sname,
+                         username=username)
 
         elif message.text == 'Список услуг и цены📋.':
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
