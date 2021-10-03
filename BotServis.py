@@ -17,7 +17,8 @@ def db_table_val(user_id: int, user_name: str, user_surname: str, username: str)
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(types.KeyboardButton('Оставьте заявку мастеру🛠.'),
-               types.KeyboardButton('Список услуг и цены📋.'))
+               types.KeyboardButton('Список услуг и цены📋.'),
+               types.KeyboardButton('Связаться на прямую.'))
 
     bot.send_message(message.chat.id,
                      'Приветствую вас в нашей мастерской, {0.first_name}!'.format(
@@ -33,7 +34,8 @@ def bot_message(message):
             bot.forward_message(chat_id, message.chat.id,
                                 message.message_id)
             bot.send_message(message.chat.id, 'Вы оставили заявку мастеру(приём заявок осуществляется один раз),'
-                                              ' можете ознакомиться со списком наших услуг при нажатии кнопки Назад👇',
+                                              '\n для повторного вызова мастера, перезапустите бота,'
+                                              '\n можете ознакомиться со списком наших услуг при нажатии кнопки Назад👇',
                              reply_markup=markup)
 
             us_id = message.from_user.id
@@ -95,12 +97,26 @@ def bot_message(message):
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             item1 = types.KeyboardButton('Оставить заявку мастеру🛠.')
             item2 = types.KeyboardButton('Список услуг и цены📋.')
+            item3 = types.KeyboardButton('Связаться на прямую.')
 
-            markup.add(item1, item2)
+            markup.add(item1, item2, item3)
 
             bot.send_message(message.chat.id,
                              'Выберете интересующий вас раздел, {0.first_name}!'.format(
                                  message.from_user), reply_markup=markup)
+
+        elif message.text == 'Связаться на прямую.':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+            bot.send_message(message.chat.id,
+                             'Спасибо что обратились в нашу мастерскую, {0.first_name}!'
+                             '\n Вот номер нашего мастера,'
+                             '\n +375293334450 Сергей Леонидович.'
+                             .format(
+                                 message.from_user), reply_markup=markup)
+
+
+
 
 
 bot.polling(none_stop=True, interval=0)
