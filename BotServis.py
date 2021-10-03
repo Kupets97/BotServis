@@ -16,8 +16,7 @@ def db_table_val(user_id: int, user_name: str, user_surname: str, username: str)
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(types.KeyboardButton('Оставьте заявку '
-                                    '\n мастеру🛠.'),
+    markup.add(types.KeyboardButton('Оставьте заявку мастеру🛠.'),
                types.KeyboardButton('Список услуг и цены📋.'),
                types.KeyboardButton('Связаться на прямую.'))
 
